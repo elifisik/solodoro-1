@@ -31,6 +31,7 @@ const MainPage = (props) => {
           sx={{
             border: '1px solid white',
             height: '100vh',
+            width: 'fullWidth',
             background: 'transparent',
             overflowY: !value && 'auto',
           }}
