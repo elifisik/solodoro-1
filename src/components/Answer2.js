@@ -51,8 +51,7 @@ const Answer2 = (props) => {
         baseAccount.publicKey
       );
 
-      console.log('Got the account', account);
-      setGifList(account.gifList);
+      console.log('Got the account', account.userList);
     } catch (error) {
       console.log('Error in getGifList: ', error);
       setGifList(null);
@@ -109,6 +108,7 @@ const Answer2 = (props) => {
             onClick={() => {
               onPressContinue();
               fetch();
+              getGifList();
             }}
             disabled={errorMessage || text.length === 0}
             variant="contained"

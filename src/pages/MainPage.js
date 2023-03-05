@@ -15,7 +15,7 @@ import Title from '../components/Title';
 
 const MainPage = (props) => {
   const [value, setValue] = useState(false);
-  console.log('value', value);
+
   return (
     <>
       <Grid

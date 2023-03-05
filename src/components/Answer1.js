@@ -16,10 +16,11 @@ import kp from '../keypair.json';
 import { program } from '@project-serum/anchor/dist/cjs/spl/associated-token';
 
 const Answer1 = (props) => {
-  const { question = '1+(6/2)x10=?', styleProps, onPressContinue } = props;
+  const { question = '2+(6/2)x10=?', styleProps, onPressContinue } = props;
   const [text, setText] = React.useState('');
   const [gifList, setGifList] = useState([]);
   const [errorMessage, setErrorMessage] = React.useState('');
+  const { SystemProgram, Keypair } = web3;
 
   const programID = new PublicKey(
     'DKtz9FqVnawRY1f3kY7aqA3oefFJqH9nup28Nh8VCAi3'
@@ -31,18 +32,48 @@ const Answer1 = (props) => {
   const opts = {
     preflightCommitment: 'processed',
   };
+  const getProvider = () => {
+    const connection = new Connection(network, opts.preflightCommitment);
+    const provider = new AnchorProvider(
+      connection,
+      window.solana,
+      opts.preflightCommitment
+    );
+    return provider;
+  };
+
   useEffect(() => {
     if (text.length === 0) {
       setErrorMessage('');
     } else {
-      if (+text !== 31) {
+      if (+text !== 32) {
         setErrorMessage(`*Please enter the correct answer`);
       } else {
         setErrorMessage('');
       }
     }
   }, [text]);
-
+  const createGifAccount = async () => {
+    try {
+      const provider = getProvider();
+      const program = await getProgram();
+      console.log('ping');
+      await program.rpc.startStuffOff({
+        accounts: {
+          baseAccount: baseAccount.publicKey,
+          user: provider.wallet.publicKey,
+          systemProgram: SystemProgram.programId,
+        },
+        signers: [baseAccount],
+      });
+      console.log(
+        'Created a new BaseAccount w/ address:',
+        baseAccount.publicKey.toString()
+      );
+    } catch (error) {
+      console.log('Error creating BaseAccount account:', error);
+    }
+  };
   const getGifList = async () => {
     try {
       const program = await getProgram();
@@ -50,7 +81,7 @@ const Answer1 = (props) => {
         baseAccount.publicKey
       );
 
-      console.log('Got the account', account.userList.toString());
+      console.log('Got the account', account.userList);
       setGifList(account.userList);
     } catch (error) {
       console.log('Error in getGifList: ', error);
@@ -63,20 +94,14 @@ const Answer1 = (props) => {
     // Create a program that you can call
     return new Program(idl, programID, getProvider());
   };
-  const getProvider = () => {
-    const connection = new Connection(network, opts.preflightCommitment);
-    const provider = new AnchorProvider(
-      connection,
-      window.solana,
-      opts.preflightCommitment
-    );
-    return provider;
-  };
+
   const fetch = async () => {
-    await Program.rpc.updateUser('changedValue', new AnchorProvider.BN(2), {
+    const provider = getProvider();
+    const program = await getProgram();
+    await program.rpc.updateUser('changedValue', new AnchorProvider.BN(2), {
       accounts: {
         baseAccount: baseAccount.publicKey,
-        user: AnchorProvider.wallet.publicKey,
+        user: provider.wallet.publicKey,
       },
     });
     const account = await program.account.baseAccount.fetch(

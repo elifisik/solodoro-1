@@ -4,10 +4,11 @@ import { Program, AnchorProvider, web3 } from '@project-serum/anchor';
 import { Connection, PublicKey, clusterApiUrl } from '@solana/web3.js';
 import kp from '../keypair.json';
 import MainPage from './MainPage';
+const { SystemProgram, Keypair } = web3;
 
 const ConnectWalletPage = () => {
   const [walletAddress, setWalletAddress] = useState(null);
-  const [gifList, setGifList] = useState([]);
+  const [userList, setuserList] = useState([]);
   const [state, setstate] = useState(0);
 
   const programID = new PublicKey(
@@ -44,21 +45,21 @@ const ConnectWalletPage = () => {
     // Create a program that you can call
     return new Program(idl, programID, getProvider());
   };
-  // const getGifList = async () => {
-  //   try {
-  //     const program = await getProgram();
-  //     const account = await program.account.baseAccount.fetch(
-  //       baseAccount.publicKey
-  //     );
+  const getuserList = async () => {
+    try {
+      const program = await getProgram();
+      const account = await program.account.baseAccount.fetch(
+        baseAccount.publicKey
+      );
 
-  //     console.log('Got the account', account);
-  //     setGifList(account.gifList);
-  //   } catch (error) {
-  //     console.log('Error in getGifList: ', error);
-  //     setGifList(null);
-  //   }
-  // };
-  const renderConnectedContainer = () => {};
+      console.log('Got the account', account);
+      setuserList(account.userList);
+    } catch (error) {
+      console.log('Error in getuserList: ', error);
+      setuserList(null);
+    }
+  };
+
   useEffect(() => {
     if (walletAddress) {
       console.log('Fetching GIF list...');
@@ -67,41 +68,38 @@ const ConnectWalletPage = () => {
 
   return (
     <>
-      {!walletAddress && (
-        <Grid
-          container
-          direction="column"
-          justifyContent="center"
-          alignItems="center"
-          spacing={3}
-        >
-          <Grid item>
-            <Typography variant="h2" sx={{ color: 'white', fontWeight: 700 }}>
-              SOLODORO
-            </Typography>
-          </Grid>
-          <Grid item>
-            <Typography variant="h4" sx={{ color: 'white' }}>
-              Are you ready for Solano training with Solodoro?
-            </Typography>
-          </Grid>
-          <Grid item>
-            <Button
-              variant="contained"
-              sx={{
-                backgroundColor: 'white',
-                color: 'black',
-                borderRadius: 6,
-                height: '50px',
-              }}
-              onClick={connectWallet}
-            >
-              Connect to Wallet
-            </Button>
-          </Grid>
+      <Grid
+        container
+        direction="column"
+        justifyContent="center"
+        alignItems="center"
+        spacing={3}
+      >
+        <Grid item>
+          <Typography variant="h2" sx={{ color: 'white', fontWeight: 700 }}>
+            SOLODORO
+          </Typography>
         </Grid>
-      )}
-      {walletAddress && <MainPage />}
+        <Grid item>
+          <Typography variant="h4" sx={{ color: 'white' }}>
+            Are you ready for Solano training with Solodoro?
+          </Typography>
+        </Grid>
+        <Grid item>
+          <Button
+            variant="contained"
+            sx={{
+              backgroundColor: 'white',
+              color: 'black',
+              borderRadius: 6,
+              height: '50px',
+            }}
+            onClick={connectWallet}
+          >
+            Connect to Wallet
+          </Button>
+        </Grid>
+      </Grid>
     </>
   );
 };

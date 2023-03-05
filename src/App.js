@@ -1,10 +1,12 @@
 import './App.css';
 import React, { useEffect, useState } from 'react';
+import ConnectWalletPage from '../../solodoro/src/pages/ConnectWalletPage';
 import { Connection, PublicKey, clusterApiUrl } from '@solana/web3.js';
-import { Program, AnchorProvider, web3 } from '@project-serum/anchor';
+import { Program, AnchorProvider, web3, BN } from '@project-serum/anchor';
 import { Buffer } from 'buffer';
 import kp from './keypair.json';
-import ConnectWalletPage from './pages/ConnectWalletPage';
+import MainPage from '../src/pages/MainPage';
+import { Button } from '@mui/material';
 window.Buffer = Buffer;
 // SystemProgram is a reference to the Solana runtime!
 const { SystemProgram, Keypair } = web3;
@@ -15,7 +17,7 @@ const arr = Object.values(kp._keypair.secretKey);
 const secret = new Uint8Array(arr);
 const baseAccount = web3.Keypair.fromSecretKey(secret);
 // This is the address of your solana program, if you forgot, just run solana address -k target/deploy/myepicproject-keypair.json
-const programID = new PublicKey('CJ9gp6GkxwseDmEQ1fA5BLN2frsciAzUC5TtQvU4idwf');
+const programID = new PublicKey('DKtz9FqVnawRY1f3kY7aqA3oefFJqH9nup28Nh8VCAi3');
 
 // Set our network to devnet.
 const network = clusterApiUrl('devnet');
@@ -36,7 +38,7 @@ const opts = {
 const App = () => {
   const [walletAddress, setWalletAddress] = useState(null);
   const [inputValue, setInputValue] = useState('');
-  const [gifList, setGifList] = useState([]);
+  const [userList, setuserList] = useState([]);
 
   const getProvider = () => {
     const connection = new Connection(network, opts.preflightCommitment);
@@ -53,7 +55,8 @@ const App = () => {
     // Create a program that you can call
     return new Program(idl, programID, getProvider());
   };
-  const getGifList = async () => {
+
+  const getuserList = async () => {
     try {
       const program = await getProgram();
       const account = await program.account.baseAccount.fetch(
@@ -61,71 +64,35 @@ const App = () => {
       );
 
       console.log('Got the account', account);
-      setGifList(account.gifList);
+      setuserList(account.gifList);
     } catch (error) {
-      console.log('Error in getGifList: ', error);
-      setGifList(null);
+      console.log('Error in getuserList: ', error);
+      setuserList(null);
     }
   };
-  const onInputChange = (event) => {
-    const { value } = event.target;
-    setInputValue(value);
-  };
-  const connectWallet = async () => {
-    const { solana } = window;
 
-    if (solana) {
-      const response = await solana.connect();
-      console.log('Connected with Public Key:', response.publicKey.toString());
-      setWalletAddress(response.publicKey.toString());
-    }
-  };
-  const sendGif = async () => {
-    if (inputValue.length === 0) {
-      console.log('No gif link given!');
-      return;
-    }
-    setInputValue('');
-    console.log('Gif link:', inputValue);
-    try {
-      const provider = getProvider();
-      const program = await getProgram();
+  // const createGifAccount = async () => {
+  //   try {
+  //     const provider = getProvider();
+  //     const program = await getProgram();
+  //     console.log('ping');
+  //     await program.rpc.startStuffOff({
+  //       accounts: {
+  //         baseAccount: baseAccount.publicKey,
+  //         user: provider.wallet.publicKey,
+  //         systemProgram: SystemProgram.programId,
+  //       },
+  //       signers: [baseAccount],
+  //     });
+  //     console.log(
+  //       'Created a new BaseAccount w/ address:',
+  //       baseAccount.publicKey.toString()
+  //     );
+  //   } catch (error) {
+  //     console.log('Error creating BaseAccount account:', error);
+  //   }
+  // };
 
-      await program.rpc.addGif(inputValue, 'another value', {
-        accounts: {
-          baseAccount: baseAccount.publicKey,
-          user: provider.wallet.publicKey,
-        },
-      });
-      console.log('GIF successfully sent to program', inputValue);
-
-      await getGifList();
-    } catch (error) {
-      console.log('Error sending GIF:', error);
-    }
-  };
-  const createGifAccount = async () => {
-    // try {
-    //   const provider = getProvider();
-    //   const program = await getProgram();
-    //   console.log('ping');
-    //   // await program.rpc.startStuffOff({
-    //   //   accounts: {
-    //   //     baseAccount: baseAccount.publicKey,
-    //   //     user: provider.wallet.publicKey,
-    //   //     systemProgram: SystemProgram.programId,
-    //   //   },
-    //   //   signers: [baseAccount],
-    //   // });
-    //   // console.log(
-    //   //   'Created a new BaseAccount w/ address:',
-    //   //   baseAccount.publicKey.toString()
-    //   // );
-    // } catch (error) {
-    //   console.log('Error creating BaseAccount account:', error);
-    // }
-  };
-  useEffect(() => {}, []);
   const checkIfWalletIsConnected = async () => {
     // We're using optional chaining (question mark) to check if the object is null
     if (window?.solana?.isPhantom) {
@@ -146,19 +113,74 @@ const App = () => {
     window.addEventListener('load', onLoad);
     return () => window.removeEventListener('load', onLoad);
   }, []);
+
+  const createGifAccount = async () => {
+    try {
+      const provider = getProvider();
+      const program = await getProgram();
+
+      console.log('ping');
+      await program.rpc.addUser('another value', {
+        accounts: {
+          baseAccount: baseAccount.publicKey,
+          user: provider.wallet.publicKey,
+        },
+      });
+      // await program.rpc.startStuffOff({
+      //   accounts: {
+      //     baseAccount: baseAccount.publicKey,
+      //     user: provider.wallet.publicKey,
+      //     systemProgram: SystemProgram.programId,
+      //   },
+      //   signers: [baseAccount],
+      // });
+      console.log(
+        'Created a new BaseAccount w/ address:',
+        baseAccount.publicKey.toString()
+      );
+      await getuserList();
+    } catch (error) {
+      console.log('Error creating BaseAccount account:', error);
+    }
+  };
+  const renderConnectedContainer = () => {
+    return (
+      <>
+        {userList === null ? (
+          <Button
+            variant="contained"
+            sx={{
+              backgroundColor: 'white',
+              color: 'black',
+              borderRadius: 6,
+              height: '50px',
+            }}
+            onClick={createGifAccount}
+          >
+            Do One-Time Initialization For SOLODORO
+          </Button>
+        ) : (
+          <MainPage />
+        )}
+      </>
+    );
+  };
   useEffect(() => {
     if (walletAddress) {
+      console.log('Fetching GIF list...');
+
+      // Call Solana program here.
+      getuserList();
+      // Set state
+      //setuserList(TEST_GIFS);
     }
   }, [walletAddress]);
-  useEffect(() => {
-    createGifAccount();
-  }, []);
   return (
     <div className="App">
       <div className="container">
         <div className="header-container">
-          <button onClick={createGifAccount}>aaaa</button>
-          <ConnectWalletPage />
+          {!walletAddress && <ConnectWalletPage />}
+          {walletAddress && renderConnectedContainer()}
         </div>
       </div>
     </div>
