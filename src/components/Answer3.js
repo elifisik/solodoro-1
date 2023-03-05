@@ -18,6 +18,7 @@ const Answer3 = (props) => {
     question = 'Yarışmada hangi takım ikinci oldu?',
     styleProps,
     onPressContinue,
+    pageIndex,
   } = props;
   const [text, setText] = React.useState('');
   const [errorMessage, setErrorMessage] = React.useState('');
@@ -33,7 +34,7 @@ const Answer3 = (props) => {
       }
     }
   }, [text]);
-
+  console.log('page3', pageIndex);
   const programID = new PublicKey(
     'DKtz9FqVnawRY1f3kY7aqA3oefFJqH9nup28Nh8VCAi3'
   );
@@ -83,56 +84,54 @@ const Answer3 = (props) => {
   };
 
   return (
-    <>
-      <Box sx={{ mt: '25%', ...styleProps?.container }}>
-        <Box>
-          <Title text="Answer the Questions" />
-        </Box>
-        <Box>
-          <Typography variant="h2" sx={{ my: '11%', color: 'white' }}>
-            {question}
-          </Typography>
-        </Box>
-        <Box>
-          <form autoComplete="off">
-            <TextField
-              sx={{
-                mb: '3%',
-                borderRadius: 6,
-                width: '400px',
-                backgroundColor: 'white',
-              }}
-              error={errorMessage.length > 0}
-              onChange={(e) => setText(e.target.value)}
-              value={text}
-              label="Please enter the correct answer"
-              variant="outlined"
-              id="fullWidth"
-            />
-          </form>
-        </Box>
-        <Box>
-          <Button
-            onClick={() => {
-              onPressContinue();
-              fetch();
-            }}
-            disabled={errorMessage || text.length === 0}
-            variant="contained"
-            sx={{
-              backgroundColor: 'white',
-              color: 'black',
-              borderRadius: 6,
-              height: '50px',
-              width: '400px',
-              my: '5%',
-            }}
-          >
-            Submit
-          </Button>
-        </Box>
+    <Box sx={{ mt: '25%', ...styleProps?.container }}>
+      <Box>
+        <Title text="Answer the Questions" />
       </Box>
-    </>
+      <Box>
+        <Typography variant="h2" sx={{ my: '11%', color: 'white' }}>
+          {question}
+        </Typography>
+      </Box>
+      <Box>
+        <form autoComplete="off">
+          <TextField
+            sx={{
+              mb: '3%',
+              borderRadius: 6,
+              width: '400px',
+              backgroundColor: 'white',
+            }}
+            error={errorMessage.length > 0}
+            onChange={(e) => setText(e.target.value)}
+            value={text}
+            label="Please enter the correct answer"
+            variant="outlined"
+            id="fullWidth"
+          />
+        </form>
+      </Box>
+      <Box>
+        <Button
+          onClick={() => {
+            onPressContinue();
+            fetch();
+          }}
+          disabled={errorMessage || text.length === 0}
+          variant="contained"
+          sx={{
+            backgroundColor: 'white',
+            color: 'black',
+            borderRadius: 6,
+            height: '50px',
+            width: '400px',
+            my: '5%',
+          }}
+        >
+          Submit
+        </Button>
+      </Box>
+    </Box>
   );
 };
 

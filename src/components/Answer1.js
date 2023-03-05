@@ -13,10 +13,14 @@ import Title from './Title';
 import { Program, AnchorProvider, web3 } from '@project-serum/anchor';
 import { Connection, PublicKey, clusterApiUrl } from '@solana/web3.js';
 import kp from '../keypair.json';
-import { program } from '@project-serum/anchor/dist/cjs/spl/associated-token';
 
 const Answer1 = (props) => {
-  const { question = '2+(6/2)x10=?', styleProps, onPressContinue } = props;
+  const {
+    question = '2+(6/2)x10=?',
+    styleProps,
+    onPressContinue,
+    pageIndex,
+  } = props;
   const [text, setText] = React.useState('');
   const [gifList, setGifList] = useState([]);
   const [errorMessage, setErrorMessage] = React.useState('');
@@ -53,6 +57,7 @@ const Answer1 = (props) => {
       }
     }
   }, [text]);
+  console.log('page1', pageIndex);
   const createGifAccount = async () => {
     try {
       const provider = getProvider();
@@ -111,57 +116,55 @@ const Answer1 = (props) => {
   };
 
   return (
-    <>
-      <Box sx={{ mt: '25%', ...styleProps?.container }}>
-        <Box>
-          <Title text="Answer the Questions" />
-        </Box>
-        <Box>
-          <Typography variant="h2" sx={{ my: '7%', color: 'white' }}>
-            {question}
-          </Typography>
-        </Box>
-        <Box>
-          <form autoComplete="off">
-            <TextField
-              sx={{
-                mb: '3%',
-                borderRadius: 3,
-                width: '400px',
-                backgroundColor: 'white',
-              }}
-              error={errorMessage.length > 0}
-              onChange={(e) => setText(e.target.value)}
-              value={text}
-              label="Please enter the correct answer"
-              variant="outlined"
-              id="fullWidth"
-            />
-          </form>
-        </Box>
-        <Box>
-          <Button
-            onClick={() => {
-              onPressContinue();
-              fetch();
-              getGifList();
-            }}
-            disabled={errorMessage || text.length === 0}
-            variant="contained"
-            sx={{
-              backgroundColor: 'white',
-              color: 'black',
-              borderRadius: 6,
-              height: '50px',
-              width: '400px',
-              my: '5%',
-            }}
-          >
-            Submit
-          </Button>
-        </Box>
+    <Box sx={{ mt: '25%', ...styleProps?.container }}>
+      <Box>
+        <Title text="Answer the Questions" />
       </Box>
-    </>
+      <Box>
+        <Typography variant="h2" sx={{ my: '7%', color: 'white' }}>
+          {question}
+        </Typography>
+      </Box>
+      <Box>
+        <form autoComplete="off">
+          <TextField
+            sx={{
+              mb: '3%',
+              borderRadius: 3,
+              width: '400px',
+              backgroundColor: 'white',
+            }}
+            error={errorMessage.length > 0}
+            onChange={(e) => setText(e.target.value)}
+            value={text}
+            label="Please enter the correct answer"
+            variant="outlined"
+            id="fullWidth"
+          />
+        </form>
+      </Box>
+      <Box>
+        <Button
+          onClick={(e) => {
+            onPressContinue();
+            fetch();
+            getGifList();
+          }}
+          disabled={errorMessage || text.length === 0}
+          variant="contained"
+          sx={{
+            backgroundColor: 'white',
+            color: 'black',
+            borderRadius: 6,
+            height: '50px',
+            width: '400px',
+            my: '5%',
+          }}
+        >
+          Submit
+        </Button>
+      </Box>
+    </Box>
   );
 };
 
