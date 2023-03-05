@@ -124,11 +124,17 @@ const Answer1 = (props) => {
         <Box>
           <form autoComplete="off">
             <TextField
-              sx={{ mb: '3%', borderRadius: 6, width: '400px' }}
+              sx={{
+                mb: '3%',
+                borderRadius: 3,
+                width: '400px',
+                backgroundColor: 'white',
+              }}
               error={errorMessage.length > 0}
               onChange={(e) => setText(e.target.value)}
               value={text}
-              label="Lütfen doğru cevabı giriniz"
+              label="Please enter the correct answer"
+              variant="outlined"
               id="fullWidth"
             />
           </form>

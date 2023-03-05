@@ -33,6 +33,7 @@ const Answer2 = (props) => {
         setErrorMessage('');
       }
     }
+    console.log('');
   }, [text]);
   const programID = new PublicKey(
     'DKtz9FqVnawRY1f3kY7aqA3oefFJqH9nup28Nh8VCAi3'
@@ -80,6 +81,7 @@ const Answer2 = (props) => {
       },
     });
   };
+
   return (
     <>
       <Box sx={{ mt: '25%', ...styleProps?.container }}>
@@ -94,11 +96,18 @@ const Answer2 = (props) => {
         <Box>
           <form autoComplete="off">
             <TextField
-              sx={{ mb: '3%', borderRadius: 6, width: '400px' }}
+              sx={{
+                mb: '3%',
+                borderRadius: 3,
+                width: '400px',
+
+                backgroundColor: 'white',
+              }}
               error={errorMessage.length > 0}
               onChange={(e) => setText(e.target.value)}
               value={text}
-              label="Lütfen doğru cevabı giriniz"
+              label="Please enter the correct answer"
+              variant="outlined"
               id="fullWidth"
             />
           </form>
@@ -110,7 +119,7 @@ const Answer2 = (props) => {
               fetch();
               getGifList();
             }}
-            disabled={errorMessage || text.length === 0}
+            disabled={errorMessage !== ''}
             variant="contained"
             sx={{
               backgroundColor: 'white',
